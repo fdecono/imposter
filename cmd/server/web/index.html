@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMPOSTER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+    
+    <div id="app">
+        <!-- Home Screen -->
+        <div id="screen-home" class="screen active">
+            <div class="container">
+                <h1 class="logo glitch" data-text="IMPOSTER">IMPOSTER</h1>
+                <p class="tagline">Find the fake among you</p>
+                
+                <div class="menu">
+                    <button id="btn-create" class="btn btn-primary">
+                        <span class="btn-text">CREATE ROOM</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+                    
+                    <div class="join-form">
+                        <input type="text" id="input-room-code" class="input" placeholder="ENTER ROOM CODE" maxlength="6">
+                        <button id="btn-join" class="btn btn-secondary">JOIN</button>
+                    </div>
+                </div>
+                
+                <div class="stats" id="stats"></div>
+            </div>
+        </div>
+
+        <!-- Lobby Screen -->
+        <div id="screen-lobby" class="screen">
+            <div class="container">
+                <div class="lobby-header">
+                    <h2 class="room-code-label">ROOM CODE</h2>
+                    <div class="room-code" id="room-code">------</div>
+                    <button id="btn-copy-link" class="btn btn-small">
+                        <span class="icon">📋</span> COPY INVITE LINK
+                    </button>
+                </div>
+                
+                <div class="nickname-form" id="nickname-form">
+                    <input type="text" id="input-nickname" class="input" placeholder="YOUR NICKNAME" maxlength="15">
+                    <button id="btn-set-nickname" class="btn btn-primary">JOIN GAME</button>
+                </div>
+                
+                <div class="players-section" id="players-section" style="display: none;">
+                    <h3>PLAYERS <span id="player-count">0/10</span></h3>
+                    <div class="players-grid" id="players-grid"></div>
+                    
+                    <div id="host-controls" class="host-controls" style="display: none;">
+                        <button id="btn-start" class="btn btn-primary btn-large" disabled>
+                            <span class="btn-text">START GAME</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                        <p class="hint" id="start-hint">Need at least 4 players</p>
+                    </div>
+                    
+                    <div id="waiting-message" class="waiting-message">
+                        <p>Waiting for host to start...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Reveal Screen -->
+        <div id="screen-role" class="screen">
+            <div class="container role-reveal">
+                <div class="role-card" id="role-card">
+                    <div class="role-title" id="role-title">YOUR ROLE</div>
+                    <div class="role-name" id="role-name">---</div>
+                    <div class="secret-word-container" id="secret-word-container" style="display: none;">
+                        <div class="secret-label">THE SECRET WORD IS</div>
+                        <div class="secret-word" id="secret-word">---</div>
+                    </div>
+                    <div class="imposter-message" id="imposter-message" style="display: none;">
+                        <p>You don't know the word.</p>
+                        <p>Blend in with the others!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submission Screen -->
+        <div id="screen-submission" class="screen">
+            <div class="container">
+                <h2>WORD SUBMISSION</h2>
+                
+                <div class="submission-status">
+                    <div class="current-turn" id="current-turn">
+                        <span class="label">CURRENT TURN</span>
+                        <span class="player-name" id="current-player-name">---</span>
+                    </div>
+                </div>
+                
+                <div class="submissions-list" id="submissions-list"></div>
+                
+                <div class="your-turn-form" id="your-turn-form" style="display: none;">
+                    <p class="your-turn-label">IT'S YOUR TURN!</p>
+                    <div class="word-input-group">
+                        <input type="text" id="input-word" class="input input-large" placeholder="ENTER ONE WORD" maxlength="30">
+                        <button id="btn-submit-word" class="btn btn-primary">SUBMIT</button>
+                    </div>
+                </div>
+                
+                <div class="waiting-turn" id="waiting-turn">
+                    <p>Waiting for <span id="waiting-for-player">---</span>...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Screen -->
+        <div id="screen-voting" class="screen">
+            <div class="container">
+                <h2>VOTE FOR THE IMPOSTER</h2>
+                
+                <div class="countdown" id="voting-countdown">
+                    <div class="countdown-number" id="countdown-number">20</div>
+                    <div class="countdown-label">SECONDS</div>
+                </div>
+                
+                <div class="voting-layout">
+                    <div class="voting-submissions">
+                        <h3>SUBMITTED WORDS</h3>
+                        <div class="voting-submissions-list" id="voting-submissions-list"></div>
+                    </div>
+                    
+                    <div class="voting-players">
+                        <h3>SELECT THE IMPOSTER</h3>
+                        <div class="vote-progress" id="vote-progress">
+                            <span id="votes-cast">0</span> / <span id="votes-total">0</span> voted
+                        </div>
+                        <div class="voting-grid" id="voting-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="voted-message" id="voted-message" style="display: none;">
+                    <p>✓ Vote submitted</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="screen-results" class="screen">
+            <div class="container">
+                <div class="winner-banner" id="winner-banner">
+                    <div class="winner-text" id="winner-text">---</div>
+                </div>
+                
+                <div class="imposter-reveal" id="imposter-reveal">
+                    <p>The imposter was</p>
+                    <div class="imposter-name" id="imposter-name">---</div>
+                </div>
+                
+                <div class="secret-reveal">
+                    <p>The secret word was</p>
+                    <div class="revealed-word" id="revealed-word">---</div>
+                </div>
+                
+                <div class="votes-breakdown" id="votes-breakdown"></div>
+                
+                <div id="play-again-controls" class="play-again-controls" style="display: none;">
+                    <button id="btn-play-again" class="btn btn-primary btn-large">
+                        <span class="btn-text">PLAY AGAIN</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </div>
+                
+                <div id="waiting-new-round" class="waiting-message">
+                    <p>Waiting for host to start next round...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
+
