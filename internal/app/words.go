@@ -2,9 +2,16 @@ package app
 
 import "math/rand"
 
-// SecretWords is a curated list of words that work well for the game
-// Themed around cyberpunk/tech but also includes common objects
-var SecretWords = []string{
+// Language represents the game language
+type Language string
+
+const (
+	LangEnglish Language = "en"
+	LangSpanish Language = "es"
+)
+
+// EnglishWords - curated list of English words for the game
+var EnglishWords = []string{
 	// Cyberpunk / Tech
 	"hacker", "cyborg", "android", "hologram", "matrix",
 	"neon", "chrome", "synth", "glitch", "virus",
@@ -45,13 +52,61 @@ var SecretWords = []string{
 	"graffiti", "tattoo", "mosaic", "origami", "kaleidoscope",
 }
 
-// GetRandomWord returns a random word from the secret words list
-func GetRandomWord() string {
-	return SecretWords[rand.Intn(len(SecretWords))]
+// SpanishWords - curated list of Spanish words for the game
+var SpanishWords = []string{
+	// Tecnología / Cyberpunk
+	"hacker", "androide", "holograma", "matriz", "neón",
+	"cromo", "virus", "láser", "plasma", "píxel",
+	"dron", "robot", "servidor", "teclado", "pantalla",
+	"circuito", "antena", "satélite", "radar", "código",
+
+	// Animales
+	"dragón", "fénix", "unicornio", "serpiente", "tigre",
+	"halcón", "lobo", "pantera", "cobra", "delfín",
+	"pulpo", "escorpión", "araña", "escarabajo", "águila",
+	"tiburón", "cuervo", "murciélago", "camaleón", "jaguar",
+
+	// Lugares
+	"casino", "metro", "azotea", "callejón", "bodega",
+	"templo", "fortaleza", "pirámide", "búnker", "torre",
+	"puente", "túnel", "puerto", "fábrica", "estadio",
+	"catedral", "laberinto", "caverna", "volcán", "castillo",
+
+	// Objetos
+	"diamante", "cristal", "espejo", "sombra", "espada",
+	"casco", "escudo", "brújula", "linterna", "silbato",
+	"paraguas", "martillo", "ancla", "reloj", "cadena",
+	"corona", "llave", "máscara", "vela", "cofre",
+
+	// Comida y Bebidas
+	"café", "whisky", "tequila", "cerveza", "pizza",
+	"chocolate", "vainilla", "canela", "miel", "limón",
+	"mango", "sandía", "churro", "empanada", "tacos",
+
+	// Naturaleza
+	"trueno", "relámpago", "tornado", "volcán", "glaciar",
+	"meteoro", "eclipse", "aurora", "tsunami", "avalancha",
+	"tormenta", "huracán", "terremoto", "maremoto", "niebla",
+
+	// Conceptos / Abstracto
+	"fantasma", "espectro", "enigma", "paradoja", "ilusión",
+	"caos", "armonía", "velocidad", "gravedad", "infinito",
+	"destino", "misterio", "secreto", "leyenda", "profecía",
+
+	// Música / Arte
+	"ritmo", "melodía", "sinfonía", "lienzo", "escultura",
+	"grafiti", "tatuaje", "mosaico", "origami", "mural",
+}
+
+// GetRandomWord returns a random word in the specified language
+func GetRandomWord(lang Language) string {
+	words := getWordList(lang)
+	return words[rand.Intn(len(words))]
 }
 
 // GetRandomWordExcluding returns a random word that's not in the excluded list
-func GetRandomWordExcluding(excluded []string) string {
+func GetRandomWordExcluding(lang Language, excluded []string) string {
+	words := getWordList(lang)
 	excludeMap := make(map[string]bool)
 	for _, w := range excluded {
 		excludeMap[w] = true
@@ -59,12 +114,32 @@ func GetRandomWordExcluding(excluded []string) string {
 
 	// Try to find a non-excluded word
 	for attempts := 0; attempts < 100; attempts++ {
-		word := GetRandomWord()
+		word := words[rand.Intn(len(words))]
 		if !excludeMap[word] {
 			return word
 		}
 	}
 
 	// Fallback: just return any word
-	return GetRandomWord()
+	return words[rand.Intn(len(words))]
+}
+
+// getWordList returns the word list for a given language
+func getWordList(lang Language) []string {
+	switch lang {
+	case LangSpanish:
+		return SpanishWords
+	default:
+		return EnglishWords
+	}
+}
+
+// ValidateLanguage checks if a language code is valid
+func ValidateLanguage(lang string) Language {
+	switch lang {
+	case "es", "ES", "spanish", "Spanish":
+		return LangSpanish
+	default:
+		return LangEnglish
+	}
 }

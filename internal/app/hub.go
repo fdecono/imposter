@@ -46,7 +46,7 @@ func NewGameHub(logger *slog.Logger) *GameHub {
 }
 
 // CreateGame creates a new game and returns its session
-func (h *GameHub) CreateGame() (*GameSession, error) {
+func (h *GameHub) CreateGame(language string) (*GameSession, error) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -64,11 +64,14 @@ func (h *GameHub) CreateGame() (*GameSession, error) {
 		return nil, fmt.Errorf("failed to generate unique room code")
 	}
 
-	game := domain.NewGame(roomCode)
+	// Validate language
+	lang := ValidateLanguage(language)
+
+	game := domain.NewGame(roomCode, string(lang))
 	session := NewGameSession(game, h.logger)
 	h.sessions[roomCode] = session
 
-	h.logger.Info("game created", "roomCode", roomCode)
+	h.logger.Info("game created", "roomCode", roomCode, "language", lang)
 
 	return session, nil
 }

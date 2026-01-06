@@ -32,11 +32,15 @@ type Game struct {
 	RoundHistory []*Round           `json:"roundHistory"`
 	Phase        Phase              `json:"phase"`
 	Settings     GameSettings       `json:"settings"`
+	Language     string             `json:"language"` // "en" or "es"
 	CreatedAt    time.Time          `json:"createdAt"`
 }
 
-// NewGame creates a new game with the given ID
-func NewGame(id string) *Game {
+// NewGame creates a new game with the given ID and language
+func NewGame(id string, language string) *Game {
+	if language == "" {
+		language = "en"
+	}
 	return &Game{
 		ID:           id,
 		HostID:       "",
@@ -45,6 +49,7 @@ func NewGame(id string) *Game {
 		RoundHistory: make([]*Round, 0),
 		Phase:        PhaseLobby,
 		Settings:     DefaultGameSettings(),
+		Language:     language,
 		CreatedAt:    time.Now(),
 	}
 }
@@ -262,6 +267,12 @@ func (g *Game) AllVoted() bool {
 	return g.CurrentRound.AllVoted(len(g.Players))
 }
 
+// Score constants
+const (
+	ScoreVilekWin    = 1 // Points for each Vilek when they catch the imposter
+	ScoreImposterWin = 3 // Points for the Imposter when they're not caught
+)
+
 // EndRound ends the current round and calculates results
 func (g *Game) EndRound() ([]VoteResult, Role, error) {
 	if g.Phase != PhaseVoting {
@@ -273,6 +284,24 @@ func (g *Game) EndRound() ([]VoteResult, Role, error) {
 	}
 
 	results, winner := g.CurrentRound.CalculateResults(g.Players)
+
+	// Award points based on winner
+	if winner == RoleVilek {
+		// Vileks win - each Vilek gets 1 point
+		for _, player := range g.Players {
+			if player.Role == RoleVilek {
+				player.AddScore(ScoreVilekWin)
+			}
+		}
+	} else {
+		// Imposter wins - Imposter gets 3 points
+		for _, player := range g.Players {
+			if player.Role == RoleImposter {
+				player.AddScore(ScoreImposterWin)
+			}
+		}
+	}
+
 	g.RoundHistory = append(g.RoundHistory, g.CurrentRound)
 	g.Phase = PhaseResults
 
@@ -330,5 +359,27 @@ func (g *Game) GetPlayerInfoList() []PlayerInfo {
 		players = append(players, p.ToInfo())
 	}
 	return players
+}
+
+// GetScoreboard returns the current scoreboard sorted by score descending
+func (g *Game) GetScoreboard() []ScoreboardEntry {
+	scoreboard := make([]ScoreboardEntry, 0, len(g.Players))
+	for _, p := range g.Players {
+		scoreboard = append(scoreboard, ScoreboardEntry{
+			PlayerID: p.ID,
+			Nickname: p.Nickname,
+			Score:    p.Score,
+		})
+	}
+
+	// Sort by score descending
+	for i := 0; i < len(scoreboard)-1; i++ {
+		for j := i + 1; j < len(scoreboard); j++ {
+			if scoreboard[j].Score > scoreboard[i].Score {
+				scoreboard[i], scoreboard[j] = scoreboard[j], scoreboard[i]
+			}
+		}
+	}
+	return scoreboard
 }
 

@@ -52,9 +52,20 @@ type StatsResponse struct {
 	TotalPlayers  int `json:"totalPlayers"`
 }
 
+// CreateRoomRequest is the request body for room creation
+type CreateRoomRequest struct {
+	Language string `json:"language"` // "en" or "es"
+}
+
 // handleCreateRoom handles POST /api/rooms
 func (s *Server) handleCreateRoom(w http.ResponseWriter, r *http.Request) {
-	session, err := s.hub.CreateGame()
+	// Parse request body for language
+	var req CreateRoomRequest
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&req) // Ignore errors, use default if not provided
+	}
+
+	session, err := s.hub.CreateGame(req.Language)
 	if err != nil {
 		s.sendError(w, http.StatusInternalServerError, "CREATION_FAILED", "Failed to create room")
 		return

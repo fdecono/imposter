@@ -96,12 +96,20 @@ type VoteUpdatePayload struct {
 	TotalPlayers int `json:"totalPlayers"`
 }
 
+// ScoreboardEntry represents a player's score in the scoreboard
+type ScoreboardEntry struct {
+	PlayerID string `json:"playerId"`
+	Nickname string `json:"nickname"`
+	Score    int    `json:"score"`
+}
+
 // RoundResultsPayload is sent when a round ends
 type RoundResultsPayload struct {
-	Votes      []VoteResult `json:"votes"`
-	ImposterID string       `json:"imposterId"`
-	Winner     Role         `json:"winner"`
-	SecretWord string       `json:"secretWord"`
+	Votes      []VoteResult      `json:"votes"`
+	ImposterID string            `json:"imposterId"`
+	Winner     Role              `json:"winner"`
+	SecretWord string            `json:"secretWord"`
+	Scoreboard []ScoreboardEntry `json:"scoreboard"`
 }
 
 // ErrorPayload is sent when an error occurs

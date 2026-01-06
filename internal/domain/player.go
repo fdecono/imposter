@@ -18,6 +18,7 @@ type Player struct {
 	HasVoted     bool             `json:"hasVoted"`
 	HasSubmitted bool             `json:"hasSubmitted"`
 	Status       ConnectionStatus `json:"status"`
+	Score        int              `json:"score"`
 	JoinedAt     time.Time        `json:"joinedAt"`
 }
 
@@ -30,6 +31,7 @@ func NewPlayer(id, nickname string) *Player {
 		HasVoted:     false,
 		HasSubmitted: false,
 		Status:       StatusConnected,
+		Score:        0,
 		JoinedAt:     time.Now(),
 	}
 }
@@ -63,6 +65,7 @@ type PlayerInfo struct {
 	HasVoted     bool             `json:"hasVoted"`
 	HasSubmitted bool             `json:"hasSubmitted"`
 	Status       ConnectionStatus `json:"status"`
+	Score        int              `json:"score"`
 }
 
 // ToInfo converts a Player to PlayerInfo (without role)
@@ -73,6 +76,12 @@ func (p *Player) ToInfo() PlayerInfo {
 		HasVoted:     p.HasVoted,
 		HasSubmitted: p.HasSubmitted,
 		Status:       p.Status,
+		Score:        p.Score,
 	}
+}
+
+// AddScore adds points to the player's score
+func (p *Player) AddScore(points int) {
+	p.Score += points
 }
 

@@ -21,6 +21,20 @@
                 <p class="tagline">Find the fake among you</p>
                 
                 <div class="menu">
+                    <div class="language-selector">
+                        <label class="language-label">LANGUAGE</label>
+                        <div class="language-options">
+                            <button id="lang-en" class="lang-btn active" data-lang="en">
+                                <span class="lang-flag">🇺🇸</span>
+                                <span class="lang-name">English</span>
+                            </button>
+                            <button id="lang-es" class="lang-btn" data-lang="es">
+                                <span class="lang-flag">🇪🇸</span>
+                                <span class="lang-name">Español</span>
+                            </button>
+                        </div>
+                    </div>
+                    
                     <button id="btn-create" class="btn btn-primary">
                         <span class="btn-text">CREATE ROOM</span>
                         <span class="btn-glow"></span>
@@ -169,7 +183,10 @@
                     <div class="revealed-word" id="revealed-word">---</div>
                 </div>
                 
-                <div class="votes-breakdown" id="votes-breakdown"></div>
+                <div class="results-columns">
+                    <div class="votes-breakdown" id="votes-breakdown"></div>
+                    <div class="scoreboard" id="scoreboard"></div>
+                </div>
                 
                 <div id="play-again-controls" class="play-again-controls" style="display: none;">
                     <button id="btn-play-again" class="btn btn-primary btn-large">

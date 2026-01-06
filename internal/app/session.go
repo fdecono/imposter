@@ -176,7 +176,8 @@ func (s *GameSession) StartGame(playerID string) error {
 		return domain.ErrNotHost
 	}
 
-	secretWord := GetRandomWord()
+	lang := ValidateLanguage(s.game.Language)
+	secretWord := GetRandomWord(lang)
 	err := s.game.StartRound(secretWord)
 	if err != nil {
 		return err
@@ -349,6 +350,7 @@ func (s *GameSession) endVotingPhaseUnlocked() {
 		ImposterID: s.game.CurrentRound.ImposterID,
 		Winner:     winner,
 		SecretWord: s.game.CurrentRound.SecretWord,
+		Scoreboard: s.game.GetScoreboard(),
 	}
 
 	s.queueEvent(domain.NewEvent(domain.EventRoundEnded, s.game.ID, payload))
@@ -373,7 +375,8 @@ func (s *GameSession) StartNewRound(playerID string) error {
 		usedWords = append(usedWords, round.SecretWord)
 	}
 
-	secretWord := GetRandomWordExcluding(usedWords)
+	lang := ValidateLanguage(s.game.Language)
+	secretWord := GetRandomWordExcluding(lang, usedWords)
 	err := s.game.StartRound(secretWord)
 	if err != nil {
 		return err
@@ -427,6 +430,7 @@ func (s *GameSession) GetGameState(playerID string) map[string]interface{} {
 			state["winner"] = s.game.CurrentRound.Winner
 			state["imposterId"] = s.game.CurrentRound.ImposterID
 			state["secretWord"] = s.game.CurrentRound.SecretWord
+			state["scoreboard"] = s.game.GetScoreboard()
 		}
 	}
 

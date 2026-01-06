@@ -21,6 +21,7 @@
         currentPlayerId: null,
         hasVoted: false,
         votingSeconds: 20,
+        language: 'en', // 'en' or 'es'
         ws: null
     };
 
@@ -42,6 +43,7 @@
         inputRoomCode: document.getElementById('input-room-code'),
         btnJoin: document.getElementById('btn-join'),
         stats: document.getElementById('stats'),
+        langButtons: document.querySelectorAll('.lang-btn'),
 
         // Lobby
         roomCode: document.getElementById('room-code'),
@@ -87,6 +89,7 @@
         imposterName: document.getElementById('imposter-name'),
         revealedWord: document.getElementById('revealed-word'),
         votesBreakdown: document.getElementById('votes-breakdown'),
+        scoreboard: document.getElementById('scoreboard'),
         playAgainControls: document.getElementById('play-again-controls'),
         btnPlayAgain: document.getElementById('btn-play-again'),
         waitingNewRound: document.getElementById('waiting-new-round'),
@@ -124,7 +127,13 @@
     // ============================================
     async function createRoom() {
         try {
-            const response = await fetch('/api/rooms', { method: 'POST' });
+            const response = await fetch('/api/rooms', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ language: state.language })
+            });
             const data = await response.json();
 
             if (data.success) {
@@ -286,7 +295,7 @@
                     break;
                 case 'RESULTS':
                     if (gs.results) {
-                        showResultsScreen(gs.results, gs.winner, gs.imposterId, gs.secretWord);
+                        showResultsScreen(gs.results, gs.winner, gs.imposterId, gs.secretWord, gs.scoreboard);
                     }
                     break;
             }
@@ -361,7 +370,7 @@
 
     function handleRoundResults(payload) {
         state.phase = 'RESULTS';
-        showResultsScreen(payload.votes, payload.winner, payload.imposterId, payload.secretWord);
+        showResultsScreen(payload.votes, payload.winner, payload.imposterId, payload.secretWord, payload.scoreboard);
     }
 
     // ============================================
@@ -566,7 +575,7 @@
         });
     }
 
-    function showResultsScreen(votes, winner, imposterId, secretWord) {
+    function showResultsScreen(votes, winner, imposterId, secretWord, scoreboard) {
         showScreen('results');
 
         // Winner banner
@@ -582,7 +591,7 @@
         elements.revealedWord.textContent = secretWord;
 
         // Votes breakdown
-        elements.votesBreakdown.innerHTML = '<h4>VOTE BREAKDOWN</h4>';
+        elements.votesBreakdown.innerHTML = '<h4>THIS ROUND</h4>';
         
         // Sort by vote count
         const sortedVotes = [...votes].sort((a, b) => b.voteCount - a.voteCount);
@@ -609,6 +618,35 @@
             
             elements.votesBreakdown.appendChild(result);
         });
+
+        // Scoreboard
+        elements.scoreboard.innerHTML = '<h4>🏆 SCOREBOARD</h4>';
+        
+        if (scoreboard && scoreboard.length > 0) {
+            const listDiv = document.createElement('div');
+            listDiv.className = 'scoreboard-list';
+            
+            scoreboard.forEach((entry, index) => {
+                const rank = index + 1;
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'scoreboard-entry';
+                if (rank <= 3) {
+                    entryDiv.classList.add(`rank-${rank}`);
+                }
+                
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
+                
+                entryDiv.innerHTML = `
+                    <span class="scoreboard-rank">${medal}</span>
+                    <span class="scoreboard-name">${escapeHtml(entry.nickname)}</span>
+                    <span class="scoreboard-score">${entry.score}</span>
+                `;
+                
+                listDiv.appendChild(entryDiv);
+            });
+            
+            elements.scoreboard.appendChild(listDiv);
+        }
 
         // Play again controls
         if (state.isHost) {
@@ -654,7 +692,19 @@
     // Event Listeners
     // ============================================
     function setupEventListeners() {
-        // Home screen
+        // Home screen - Language selector
+        elements.langButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update state
+                state.language = btn.dataset.lang;
+                
+                // Update UI
+                elements.langButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Home screen - Create room
         elements.btnCreate.addEventListener('click', createRoom);
 
         elements.btnJoin.addEventListener('click', async () => {
