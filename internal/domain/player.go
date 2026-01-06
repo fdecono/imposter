@@ -84,4 +84,3 @@ func (p *Player) ToInfo() PlayerInfo {
 func (p *Player) AddScore(points int) {
 	p.Score += points
 }
-

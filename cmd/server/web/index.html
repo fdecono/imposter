@@ -75,6 +75,26 @@
                     <div class="players-grid" id="players-grid"></div>
                     
                     <div id="host-controls" class="host-controls" style="display: none;">
+                        <div class="time-settings">
+                            <h4>TIME LIMITS</h4>
+                            <div class="time-setting">
+                                <label>Word Submission</label>
+                                <select id="submission-time" class="time-select">
+                                    <option value="0" selected>No limit</option>
+                                    <option value="15">15 seconds</option>
+                                    <option value="30">30 seconds</option>
+                                </select>
+                            </div>
+                            <div class="time-setting">
+                                <label>Voting</label>
+                                <select id="voting-time" class="time-select">
+                                    <option value="0" selected>No limit</option>
+                                    <option value="15">15 seconds</option>
+                                    <option value="30">30 seconds</option>
+                                </select>
+                            </div>
+                        </div>
+                        
                         <button id="btn-start" class="btn btn-primary btn-large" disabled>
                             <span class="btn-text">START GAME</span>
                             <span class="btn-glow"></span>
@@ -110,7 +130,7 @@
         <!-- Submission Screen -->
         <div id="screen-submission" class="screen">
             <div class="container">
-                <h2>WORD SUBMISSION</h2>
+                <div class="role-reminder" id="role-reminder-submission"></div>
                 
                 <div class="submission-status">
                     <div class="current-turn" id="current-turn">
@@ -138,7 +158,7 @@
         <!-- Voting Screen -->
         <div id="screen-voting" class="screen">
             <div class="container">
-                <h2>VOTE FOR THE IMPOSTER</h2>
+                <div class="role-reminder" id="role-reminder-voting"></div>
                 
                 <div class="countdown" id="voting-countdown">
                     <div class="countdown-number" id="countdown-number">20</div>

@@ -185,6 +185,8 @@ func (c *Client) handleMessage(data []byte) {
 	switch msg.Type {
 	case MsgJoinLobby:
 		c.handleJoinLobby(msg.Payload)
+	case MsgUpdateSettings:
+		c.handleUpdateSettings(msg.Payload)
 	case MsgStartGame:
 		c.handleStartGame()
 	case MsgSubmitWord:
@@ -230,6 +232,31 @@ func (c *Client) handleJoinLobby(payload interface{}) {
 
 	// Send connected confirmation
 	c.sendConnected()
+}
+
+// handleUpdateSettings handles an update_settings message
+func (c *Client) handleUpdateSettings(payload interface{}) {
+	payloadMap, ok := payload.(map[string]interface{})
+	if !ok {
+		c.sendError(ErrCodeInvalidMessage, "Invalid payload")
+		return
+	}
+
+	votingDuration, _ := payloadMap["votingDuration"].(float64)
+	submissionDuration, _ := payloadMap["submissionDuration"].(float64)
+
+	err := c.session.UpdateSettings(c.playerID, int(votingDuration), int(submissionDuration))
+	if err != nil {
+		switch err {
+		case domain.ErrNotHost:
+			c.sendError(ErrCodeNotHost, "Only the host can update settings")
+		case domain.ErrGameAlreadyStarted:
+			c.sendError(ErrCodeInvalidAction, "Cannot change settings after game started")
+		default:
+			c.sendError(ErrCodeInternalError, err.Error())
+		}
+		return
+	}
 }
 
 // handleStartGame handles a start_game message
@@ -352,4 +379,3 @@ func (c *Client) sendPong() {
 	msg := NewServerMessage(MsgPong, nil)
 	c.Send(msg)
 }
-

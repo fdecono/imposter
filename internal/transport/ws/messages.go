@@ -8,6 +8,7 @@ type MessageType string
 // Client → Server message types
 const (
 	MsgJoinLobby       MessageType = "join_lobby"
+	MsgUpdateSettings  MessageType = "update_settings"
 	MsgStartGame       MessageType = "start_game"
 	MsgSubmitWord      MessageType = "submit_word"
 	MsgCastVote        MessageType = "cast_vote"
@@ -17,20 +18,22 @@ const (
 
 // Server → Client message types
 const (
-	MsgConnected          MessageType = "connected"
-	MsgError              MessageType = "error"
-	MsgLobbyUpdate        MessageType = "lobby_update"
-	MsgGameStarted        MessageType = "game_started"
-	MsgRoleAssigned       MessageType = "role_assigned"
-	MsgSubmissionPhase    MessageType = "submission_phase"
-	MsgSubmissionUpdate   MessageType = "submission_update"
-	MsgVotingPhase        MessageType = "voting_phase"
-	MsgVotingCountdown    MessageType = "voting_countdown"
-	MsgVoteUpdate         MessageType = "vote_update"
-	MsgRoundResults       MessageType = "round_results"
-	MsgPlayerDisconnected MessageType = "player_disconnected"
-	MsgPlayerReconnected  MessageType = "player_reconnected"
-	MsgPong               MessageType = "pong"
+	MsgConnected           MessageType = "connected"
+	MsgError               MessageType = "error"
+	MsgLobbyUpdate         MessageType = "lobby_update"
+	MsgSettingsUpdated     MessageType = "settings_updated"
+	MsgGameStarted         MessageType = "game_started"
+	MsgRoleAssigned        MessageType = "role_assigned"
+	MsgSubmissionPhase     MessageType = "submission_phase"
+	MsgSubmissionUpdate    MessageType = "submission_update"
+	MsgSubmissionCountdown MessageType = "submission_countdown"
+	MsgVotingPhase         MessageType = "voting_phase"
+	MsgVotingCountdown     MessageType = "voting_countdown"
+	MsgVoteUpdate          MessageType = "vote_update"
+	MsgRoundResults        MessageType = "round_results"
+	MsgPlayerDisconnected  MessageType = "player_disconnected"
+	MsgPlayerReconnected   MessageType = "player_reconnected"
+	MsgPong                MessageType = "pong"
 )
 
 // ClientMessage represents a message from client to server
@@ -62,6 +65,12 @@ type JoinLobbyPayload struct {
 	Nickname string `json:"nickname"`
 }
 
+// UpdateSettingsPayload is the payload for update_settings message
+type UpdateSettingsPayload struct {
+	VotingDuration     int `json:"votingDuration"`     // seconds, 0 = no limit
+	SubmissionDuration int `json:"submissionDuration"` // seconds, 0 = no limit
+}
+
 // SubmitWordPayload is the payload for submit_word message
 type SubmitWordPayload struct {
 	Word string `json:"word"`
@@ -89,14 +98,13 @@ type ErrorPayload struct {
 
 // Error codes
 const (
-	ErrCodeInvalidMessage  = "INVALID_MESSAGE"
-	ErrCodeGameNotFound    = "GAME_NOT_FOUND"
-	ErrCodeGameFull        = "GAME_FULL"
-	ErrCodeNotYourTurn     = "NOT_YOUR_TURN"
-	ErrCodeInvalidAction   = "INVALID_ACTION"
-	ErrCodeNotHost         = "NOT_HOST"
-	ErrCodeAlreadyVoted    = "ALREADY_VOTED"
-	ErrCodeCannotVoteSelf  = "CANNOT_VOTE_SELF"
-	ErrCodeInternalError   = "INTERNAL_ERROR"
+	ErrCodeInvalidMessage = "INVALID_MESSAGE"
+	ErrCodeGameNotFound   = "GAME_NOT_FOUND"
+	ErrCodeGameFull       = "GAME_FULL"
+	ErrCodeNotYourTurn    = "NOT_YOUR_TURN"
+	ErrCodeInvalidAction  = "INVALID_ACTION"
+	ErrCodeNotHost        = "NOT_HOST"
+	ErrCodeAlreadyVoted   = "ALREADY_VOTED"
+	ErrCodeCannotVoteSelf = "CANNOT_VOTE_SELF"
+	ErrCodeInternalError  = "INTERNAL_ERROR"
 )
-
