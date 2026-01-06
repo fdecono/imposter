@@ -54,9 +54,11 @@ func NewPlayerEvent(eventType EventType, gameID, playerID string, payload interf
 
 // LobbyUpdatePayload is sent when lobby state changes
 type LobbyUpdatePayload struct {
-	Players  []PlayerInfo `json:"players"`
-	HostID   string       `json:"hostId"`
-	CanStart bool         `json:"canStart"`
+	Players            []PlayerInfo `json:"players"`
+	HostID             string       `json:"hostId"`
+	CanStart           bool         `json:"canStart"`
+	VotingDuration     int          `json:"votingDuration"`     // seconds, 0 = no limit
+	SubmissionDuration int          `json:"submissionDuration"` // seconds, 0 = no limit
 }
 
 // RoleAssignedPayload is sent to each player with their role
@@ -117,4 +119,3 @@ type ErrorPayload struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 }
-

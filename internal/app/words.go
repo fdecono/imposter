@@ -50,6 +50,27 @@ var EnglishWords = []string{
 	// Music / Art
 	"rhythm", "melody", "symphony", "canvas", "sculpture",
 	"graffiti", "tattoo", "mosaic", "origami", "kaleidoscope",
+
+	// Games & Entertainment
+	"chess", "poker", "dice", "cards", "domino", "roulette",
+
+	// Weapons
+	"katana", "revolver", "grenade", "cannon", "rifle", "crossbow", "dagger",
+
+	// Vehicles
+	"motorcycle", "helicopter", "submarine", "spaceship", "hovercraft", "rocket",
+
+	// Gems & Materials
+	"silver", "copper", "titanium", "platinum", "emerald", "sapphire",
+
+	// Professions & Characters
+	"ninja", "samurai", "pirate", "wizard", "knight", "assassin",
+
+	// Time of Day
+	"midnight", "sunrise", "sunset", "twilight", "dawn",
+
+	// Mystical
+	"oracle", "relic", "cipher", "amulet",
 }
 
 // SpanishWords - curated list of Spanish words for the game
@@ -96,6 +117,27 @@ var SpanishWords = []string{
 	// Música / Arte
 	"ritmo", "melodía", "sinfonía", "lienzo", "escultura",
 	"grafiti", "tatuaje", "mosaico", "origami", "mural",
+
+	// Juegos y Entretenimiento
+	"ajedrez", "póker", "dados", "cartas", "dominó", "ruleta",
+
+	// Armas
+	"katana", "revólver", "granada", "cañón", "rifle", "ballesta", "daga",
+
+	// Vehículos
+	"motocicleta", "helicóptero", "submarino", "nave", "cohete", "aeronave",
+
+	// Gemas y Materiales
+	"plata", "cobre", "titanio", "platino", "esmeralda", "zafiro",
+
+	// Profesiones y Personajes
+	"ninja", "samurái", "pirata", "mago", "caballero", "asesino",
+
+	// Momentos del Día
+	"medianoche", "amanecer", "atardecer", "crepúsculo", "alba",
+
+	// Místico
+	"oráculo", "reliquia", "cifra", "amuleto",
 }
 
 // GetRandomWord returns a random word in the specified language

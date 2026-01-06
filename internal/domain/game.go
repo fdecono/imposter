@@ -7,19 +7,21 @@ import (
 
 // GameSettings holds configurable game parameters
 type GameSettings struct {
-	MinPlayers     int           `json:"minPlayers"`
-	MaxPlayers     int           `json:"maxPlayers"`
-	VotingDuration time.Duration `json:"votingDuration"`
-	RoleRevealTime time.Duration `json:"roleRevealTime"`
+	MinPlayers         int           `json:"minPlayers"`
+	MaxPlayers         int           `json:"maxPlayers"`
+	VotingDuration     time.Duration `json:"votingDuration"`     // 0 = no limit
+	SubmissionDuration time.Duration `json:"submissionDuration"` // 0 = no limit
+	RoleRevealTime     time.Duration `json:"roleRevealTime"`
 }
 
 // DefaultGameSettings returns the default game settings
 func DefaultGameSettings() GameSettings {
 	return GameSettings{
-		MinPlayers:     4,
-		MaxPlayers:     10,
-		VotingDuration: 20 * time.Second,
-		RoleRevealTime: 5 * time.Second,
+		MinPlayers:         4,
+		MaxPlayers:         10,
+		VotingDuration:     0, // No limit by default
+		SubmissionDuration: 0, // No limit by default
+		RoleRevealTime:     5 * time.Second,
 	}
 }
 
@@ -316,9 +318,11 @@ func (g *Game) GetLobbyState() *LobbyUpdatePayload {
 	}
 
 	return &LobbyUpdatePayload{
-		Players:  players,
-		HostID:   g.HostID,
-		CanStart: g.CanStart(),
+		Players:            players,
+		HostID:             g.HostID,
+		CanStart:           g.CanStart(),
+		VotingDuration:     int(g.Settings.VotingDuration.Seconds()),
+		SubmissionDuration: int(g.Settings.SubmissionDuration.Seconds()),
 	}
 }
 
@@ -352,6 +356,16 @@ func (g *Game) IsHost(playerID string) bool {
 	return g.HostID == playerID
 }
 
+// UpdateSettings updates the game settings (host only)
+func (g *Game) UpdateSettings(votingDuration, submissionDuration time.Duration) error {
+	if g.Phase != PhaseLobby {
+		return ErrGameAlreadyStarted
+	}
+	g.Settings.VotingDuration = votingDuration
+	g.Settings.SubmissionDuration = submissionDuration
+	return nil
+}
+
 // GetPlayerInfoList returns a list of all players as PlayerInfo
 func (g *Game) GetPlayerInfoList() []PlayerInfo {
 	players := make([]PlayerInfo, 0, len(g.Players))
@@ -382,4 +396,3 @@ func (g *Game) GetScoreboard() []ScoreboardEntry {
 	}
 	return scoreboard
 }
-

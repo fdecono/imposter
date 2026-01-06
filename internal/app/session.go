@@ -167,6 +167,29 @@ func (s *GameSession) ReconnectPlayer(playerID string) (*domain.Player, error) {
 	return player, nil
 }
 
+// UpdateSettings updates game settings (host only)
+func (s *GameSession) UpdateSettings(playerID string, votingDuration, submissionDuration int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if !s.game.IsHost(playerID) {
+		return domain.ErrNotHost
+	}
+
+	votingTime := time.Duration(votingDuration) * time.Second
+	submissionTime := time.Duration(submissionDuration) * time.Second
+
+	err := s.game.UpdateSettings(votingTime, submissionTime)
+	if err != nil {
+		return err
+	}
+
+	// Broadcast settings update to all players
+	s.queueEvent(domain.NewEvent(domain.EventGameStarted, s.game.ID, s.game.GetLobbyState()))
+
+	return nil
+}
+
 // StartGame starts the game (host only)
 func (s *GameSession) StartGame(playerID string) error {
 	s.mu.Lock()
@@ -267,9 +290,11 @@ func (s *GameSession) startVotingPhase() {
 	}
 	s.queueEvent(domain.NewEvent(domain.EventVotingStarted, s.game.ID, payload))
 
-	// Start countdown
-	s.countdownDone = make(chan struct{})
-	go s.votingCountdown(remainingSeconds)
+	// Start countdown only if there's a time limit
+	if votingDuration > 0 {
+		s.countdownDone = make(chan struct{})
+		go s.votingCountdown(remainingSeconds)
+	}
 }
 
 // votingCountdown runs the voting countdown
@@ -510,4 +535,3 @@ func (s *GameSession) Close() {
 	s.clients = make(map[string]ClientConnection)
 	s.clientsMu.Unlock()
 }
-

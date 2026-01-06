@@ -48,8 +48,8 @@ type HealthResponse struct {
 
 // StatsResponse is the response for stats endpoint
 type StatsResponse struct {
-	ActiveGames   int `json:"activeGames"`
-	TotalPlayers  int `json:"totalPlayers"`
+	ActiveGames  int `json:"activeGames"`
+	TotalPlayers int `json:"totalPlayers"`
 }
 
 // CreateRoomRequest is the request body for room creation
@@ -209,4 +209,3 @@ func (s *Server) sendError(w http.ResponseWriter, status int, code, message stri
 		},
 	})
 }
-

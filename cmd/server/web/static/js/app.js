@@ -55,9 +55,15 @@
         playerCount: document.getElementById('player-count'),
         playersGrid: document.getElementById('players-grid'),
         hostControls: document.getElementById('host-controls'),
+        submissionTimeSelect: document.getElementById('submission-time'),
+        votingTimeSelect: document.getElementById('voting-time'),
         btnStart: document.getElementById('btn-start'),
         startHint: document.getElementById('start-hint'),
         waitingMessage: document.getElementById('waiting-message'),
+        
+        // Role reminders
+        roleReminderSubmission: document.getElementById('role-reminder-submission'),
+        roleReminderVoting: document.getElementById('role-reminder-voting'),
 
         // Role
         roleCard: document.getElementById('role-card'),
@@ -76,6 +82,7 @@
         waitingForPlayer: document.getElementById('waiting-for-player'),
 
         // Voting
+        votingCountdown: document.getElementById('voting-countdown'),
         countdownNumber: document.getElementById('countdown-number'),
         votesCast: document.getElementById('votes-cast'),
         votesTotal: document.getElementById('votes-total'),
@@ -441,7 +448,26 @@
 
     function showSubmissionScreen() {
         showScreen('submission');
+        updateRoleReminder(elements.roleReminderSubmission);
         updateSubmissionUI();
+    }
+    
+    function updateRoleReminder(element) {
+        if (!state.role) return;
+        
+        element.className = 'role-reminder ' + state.role.toLowerCase();
+        
+        if (state.role === 'VILEK') {
+            element.innerHTML = `
+                <div class="role-reminder-role">YOU ARE A VILEK</div>
+                <div class="role-reminder-word">${escapeHtml(state.secretWord)}</div>
+            `;
+        } else {
+            element.innerHTML = `
+                <div class="role-reminder-role">YOU ARE THE IMPOSTER</div>
+                <div class="role-reminder-word">Find the secret!</div>
+            `;
+        }
     }
 
     function updateSubmissionUI() {
@@ -482,11 +508,19 @@
 
     function showVotingScreen() {
         showScreen('voting');
+        updateRoleReminder(elements.roleReminderVoting);
         state.hasVoted = false;
 
         // Reset vote UI
         elements.votedMessage.style.display = 'none';
-        updateCountdown(state.votingSeconds);
+        
+        // Only show countdown if there's a time limit
+        if (state.votingDuration > 0) {
+            elements.votingCountdown.style.display = 'block';
+            updateCountdown(state.votingSeconds);
+        } else {
+            elements.votingCountdown.style.display = 'none';
+        }
 
         // Build submissions list for reference
         elements.votingSubmissionsList.innerHTML = '';
@@ -778,6 +812,16 @@
                 elements.btnSetNickname.click();
             }
         });
+
+        // Time settings
+        const updateSettings = () => {
+            const votingDuration = parseInt(elements.votingTimeSelect.value);
+            const submissionDuration = parseInt(elements.submissionTimeSelect.value);
+            sendMessage('update_settings', { votingDuration, submissionDuration });
+        };
+
+        elements.submissionTimeSelect.addEventListener('change', updateSettings);
+        elements.votingTimeSelect.addEventListener('change', updateSettings);
 
         elements.btnStart.addEventListener('click', () => {
             sendMessage('start_game');
